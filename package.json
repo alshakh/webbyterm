@@ -1,0 +1,41 @@
+{
+  "name": "webbyterm",
+  "version": "0.0.1",
+  "description": "experimental terminal for the web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alshakh/webbyterm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alshakh/webbyterm/issues"
+  },
+  "homepage": "https://github.com/alshakh/webbyterm#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-ws": "^4.0.0",
+    "node-pty": "^0.8.1"
+  },
+  "devDependencies": {
+    "jspm": "^0.16.54"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "static",
+      "packages": "static/packages"
+    },
+    "dependencies": {
+      "xterm": "npm:xterm@^3.12.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
