@@ -40,7 +40,7 @@ app.post('/terminal/:id/start', (req, res) => {
             shellopts.push('-r')
         }
 
-        console.log(shellopts)
+        console.log("running shell with the shell optoins ",shellopts)
         terminals[id] = pty.spawn('/bin/bash', shellopts, {
             name: `xterm-color`,
             cwd: cwd,

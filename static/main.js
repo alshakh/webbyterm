@@ -49,24 +49,13 @@ let connectTerminal = (spec) => {
         fontSize: DEFAULTS['fontSize']
     });
     // start terminal backend and connect to pty
-    console.log(JSON.stringify({
-        refresh: spec.refresh,
-        cwd: spec.cwd,
-        unrestricted: spec.unrestricted,
-        env: spec.env
-    }))
     fetch(`/terminal/${spec.id}/start`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                refresh: spec.refresh,
-                cwd: spec.cwd,
-                unrestricted: spec.unrestricted,
-                env: spec.env
-            })
+            body: JSON.stringify(spec)
         })
         .then(() => {
             const socketUrl = `${(location.protocol === 'https:') ? 'wss://' : 'ws://'}${location.hostname}${location.port ? `:${location.port}` : ''}/terminal/${spec.id}`;
@@ -98,44 +87,47 @@ let changeTerminalFontSize = (terminalRef, delta) => {
 
 
 
+let processTerminalElementAttributes = (el) => {
+
+    let id = el.dataset.id
+
+    // if not defined => false
+    let refresh =  ((typeof el.dataset['refresh']) !== 'undefined' ? true : false)
+
+    let cwd = el.dataset['cwd'] || DEFAULTS.cwd
+    // if not defined => false
+
+    let unrestricted = ((typeof el.dataset['unrestrictedShell']) !== 'undefined' ? true : false)
+
+    //environment + prmopt
+    let name = el.dataset['name'] || '-'
+    let env = {}
+    if (el.dataset['env']) {
+        try {
+            env = JSON.parse(el.dataset['env'])
+        } catch(e) {
+            console.log("invalid env data-attribute, ignoring",e);
+        }
+    }
+    env['PS1'] = `${name} ${DEFAULTS.prompt}`
+
+
+    return {
+        id : id,
+        refresh : refresh,
+        cwd : cwd,
+        unrestricted : unrestricted,
+        env : env
+    }
+}
+
 let initAllTerminals = () => {
     document.querySelectorAll('[data-terminal]').forEach((el) => {
 
         let id = getTerminalElementId(el)
 
-        // prepare spec object from element
-        let spec = (() => {
-            // if not defined => false
-            let refresh =  ((typeof el.dataset['refresh']) !== 'undefined' ? true : false)
-
-            let cwd = el.dataset['cwd'] || DEFAULTS.cwd
-            // if not defined => false
-
-            let unrestricted = ((typeof el.dataset['unrestrictedShell']) !== 'undefined' ? true : false)
-
-            //environment + prmopt
-            let env = {}
-            if (el.dataset['env']) {
-                try {
-                    env = JSON.parse(el.dataset['env'])
-                } catch(e) {
-                    console.log("invalid env data-attribute, ignoring",e);
-                }
-            }
-            env['PS1'] = '>> '
-
-
-            return {
-                id : id,
-                refresh : refresh,
-                cwd : cwd,
-                unrestricted : unrestricted,
-                env : env
-            }
-        })()
-
         // connect a terminal
-
+        let spec = processTerminalElementAttributes(el)
         let terminal = connectTerminal(spec)
 
         // attach terminal to element
