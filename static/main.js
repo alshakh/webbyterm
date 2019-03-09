@@ -34,6 +34,7 @@ let fitTerminal = (terminalRef) => {
  *      id : <unique terminal id>,
  *      cwd : <terminal working directory>,
  *      referesh : true | false <keep terminal across refreshes of the browser (default : false)>
+ *      unrestricted : true | false <wheather or not the shell is started in restricted mode> (default : false)
  *  }
  *
  */
@@ -48,7 +49,8 @@ let connectTerminal = (spec) => {
             headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 refresh: spec.refresh,
-                cwd: spec.cwd
+                cwd: spec.cwd,
+                unrestricted : spec.unrestricted,
             })
         })
         .then(() => {
@@ -91,6 +93,7 @@ let initAllTerminals = () => {
             id : id,
             refresh : ((typeof el.dataset['refresh']) !== 'undefined' ? true : false), // if not defined => false
             cwd : el.dataset['cwd'] || '/tmp/',
+            unrestricted : ((typeof el.dataset['restrictedShell']) !== 'undefined' ? true : false), // if not defined => false
         })
 
         // attach terminal to element

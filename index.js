@@ -21,14 +21,23 @@ app.post('/terminal/:id/start', (req, res) => {
     let id = req.params.id
     let refresh = req.body.refresh
     let cwd = req.body.cwd
+    let unrestricted = req.body.unrestricted
 
-    if (terminals[id] && refresh ) { // refresh old terminals unless (refresh=false)
+    // refresh old terminals unless (refresh=false)
+    if (terminals[id] && refresh ) {
         terminals[id].destroy()
         terminals[id] = undefined
     }
 
+    // if the shell is not defined already, create a new one
+    let shellopts = []
+    if ( ! unrestricted) {
+        shellopts.push('-r')
+    }
+
+    console.log(shellopts)
     if (!terminals[id]) {
-        terminals[id] = pty.spawn('/bin/bash', [], {
+        terminals[id] = pty.spawn('/bin/bash', shellopts, {
             name: `xterm-color`,
             cwd: cwd,
             env: {},
