@@ -23,6 +23,7 @@
     "node-pty": "^0.8.1"
   },
   "devDependencies": {
+    "eslint": "^5.15.1",
     "jspm": "^0.16.54"
   },
   "jspm": {

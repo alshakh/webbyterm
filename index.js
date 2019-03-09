@@ -4,10 +4,7 @@ var bodyparser = require('body-parser')
 var pty = require('node-pty')
 
 var app = express()
-
-var ews = expressws(app);
-
-app.use(bodyparser.json())
+var ews = expressws(app); app.use(bodyparser.json())
 
 app.use(express.static(__dirname + "/static"));
 
@@ -34,13 +31,27 @@ app.post('/terminal/:id/start', (req, res) => {
         terminals[id] = pty.spawn('/bin/bash', [], {
             name: `xterm-color`,
             cwd: cwd,
-            env: {}
+            env: {},
         })
     }
+
 
     res.end("OK")
 })
 
+
+app.post('/terminal/:id/resize', (req, res) => {
+    console.log('resizing terminal ', {
+        id: req.params.id,
+        cols: req.body.cols,
+        rows : req.body.rows,
+    });
+
+    let id = req.params.id
+
+    terminals[id].resize(req.body.cols, req.body.rows)
+    res.end("OK")
+})
 
 ews.app.ws('/terminal/:id', function(ws, req) {
     let id = req.params.id
