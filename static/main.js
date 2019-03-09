@@ -8,7 +8,9 @@ Terminal.applyAddon(Terminal_Attach);
 
 
 const DEFAULTS = {
-    fontSize : 14
+    fontSize: 20,
+    prompt : ">> ",
+    cwd : "/var/tmp"
 }
 
 
@@ -21,7 +23,10 @@ let fitTerminal = (terminalRef) => {
 
     fetch(`/terminal/${terminalRef.id}/resize`, {
         method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             cols: myTerm.cols,
             rows: myTerm.rows,
@@ -44,13 +49,23 @@ let connectTerminal = (spec) => {
         fontSize: DEFAULTS['fontSize']
     });
     // start terminal backend and connect to pty
+    console.log(JSON.stringify({
+        refresh: spec.refresh,
+        cwd: spec.cwd,
+        unrestricted: spec.unrestricted,
+        env: spec.env
+    }))
     fetch(`/terminal/${spec.id}/start`, {
             method: 'POST',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 refresh: spec.refresh,
                 cwd: spec.cwd,
-                unrestricted : spec.unrestricted,
+                unrestricted: spec.unrestricted,
+                env: spec.env
             })
         })
         .then(() => {
@@ -67,7 +82,7 @@ let connectTerminal = (spec) => {
 
 
 
-let getTerminalElementId  = (el) => {
+let getTerminalElementId = (el) => {
     if (!el.dataset.id) {
         el.dataset.id = Math.random().toString(36).substr(2)
     }
@@ -88,27 +103,53 @@ let initAllTerminals = () => {
 
         let id = getTerminalElementId(el)
 
+        // prepare spec object from element
+        let spec = (() => {
+            // if not defined => false
+            let refresh =  ((typeof el.dataset['refresh']) !== 'undefined' ? true : false)
+
+            let cwd = el.dataset['cwd'] || DEFAULTS.cwd
+            // if not defined => false
+
+            let unrestricted = ((typeof el.dataset['unrestrictedShell']) !== 'undefined' ? true : false)
+
+            //environment + prmopt
+            let env = {}
+            if (el.dataset['env']) {
+                try {
+                    env = JSON.parse(el.dataset['env'])
+                } catch(e) {
+                    console.log("invalid env data-attribute, ignoring",e);
+                }
+            }
+            env['PS1'] = '>> '
+
+
+            return {
+                id : id,
+                refresh : refresh,
+                cwd : cwd,
+                unrestricted : unrestricted,
+                env : env
+            }
+        })()
+
         // connect a terminal
-        let terminal = connectTerminal({
-            id : id,
-            refresh : ((typeof el.dataset['refresh']) !== 'undefined' ? true : false), // if not defined => false
-            cwd : el.dataset['cwd'] || '/tmp/',
-            unrestricted : ((typeof el.dataset['restrictedShell']) !== 'undefined' ? true : false), // if not defined => false
-        })
+
+        let terminal = connectTerminal(spec)
 
         // attach terminal to element
         terminal.open(el)
 
         // prepare terminalRef
         let terminalRef = {
-            id : id,
-            terminal : terminal,
-            element : el
+            id: id,
+            terminal: terminal,
+            element: el
         }
 
         // register the new terminal object
         terminalRefs[terminalRef.id] = terminalRef
-        //
 
         // fit the terminal size
         fitTerminal(terminalRef)
@@ -119,7 +160,7 @@ let initAllTerminals = () => {
         // attach listener for resizing the font size with ctrl+mousewheel
         el.addEventListener("wheel", (event) => {
             if (event.ctrlKey) {
-                changeTerminalFontSize(terminalRef,  -1 * event.deltaY)
+                changeTerminalFontSize(terminalRef, -1 * event.deltaY)
             }
         })
 
