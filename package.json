@@ -2,7 +2,7 @@
   "name": "webbyterm",
   "version": "0.0.1",
   "description": "experimental terminal for the web",
-  "main": "index.js",
+  "main": "webbyterm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,28 +17,9 @@
   },
   "homepage": "https://github.com/alshakh/webbyterm#readme",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
-    "express-ws": "^4.0.0",
     "node-pty": "^0.8.1"
   },
   "devDependencies": {
-    "eslint": "^5.15.1",
-    "jspm": "^0.16.54"
-  },
-  "jspm": {
-    "directories": {
-      "baseURL": "static",
-      "packages": "static/packages"
-    },
-    "dependencies": {
-      "css": "github:systemjs/plugin-css@^0.1.37",
-      "xterm": "npm:xterm@^3.12.0"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4"
-    }
+    "eslint": "^5.15.1"
   }
 }
