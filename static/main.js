@@ -2,8 +2,11 @@ const Terminal = require("xterm").Terminal
 const Terminal_Fit = require("xterm/dist/addons/fit/fit")
 const Terminal_Attach = require("xterm/dist/addons/attach/attach")
 
+
+
 Terminal.applyAddon(Terminal_Fit);
 Terminal.applyAddon(Terminal_Attach);
+
 
 
 
@@ -46,7 +49,9 @@ let fitTerminal = (terminalRef) => {
 let connectTerminal = (spec) => {
     //
     const term = new Terminal({
-        fontSize: DEFAULTS['fontSize']
+        fontSize: DEFAULTS['fontSize'],
+        //lineHeight: 0.9,
+        fontFamily: "Inconsolata"
     });
     // start terminal backend and connect to pty
     fetch(`/terminal/${spec.id}/start`, {
@@ -78,10 +83,16 @@ let getTerminalElementId = (el) => {
     return el.dataset.id
 }
 
+
+
+
 let changeTerminalFontSize = (terminalRef, delta) => {
-    console.log(delta)
     let term = terminalRef.terminal
-    term.setOption('fontSize', term.getOption('fontSize') + delta)
+    let newSize = term.getOption('fontSize') + delta
+    if ( newSize < 1 || newSize > 100  ) {
+        newSize = DEFAULTS['fontSize']
+    }
+    term.setOption('fontSize', newSize)
     fitTerminal(terminalRef)
 }
 

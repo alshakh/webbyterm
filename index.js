@@ -67,6 +67,7 @@ app.post('/terminal/:id/resize', (req, res) => {
 })
 
 ews.app.ws('/terminal/:id', function(ws, req) {
+
     let id = req.params.id
 
     if (!terminals[id]) {
@@ -87,7 +88,12 @@ ews.app.ws('/terminal/:id', function(ws, req) {
     //
     myTerm.on('data', function(data) {
         myTerm.webby_saveddata += data
+        try {
         ws.send(data);
+        } catch (err) { 
+            console.error(err)
+            console.log('ignoring')
+        }
     });
 
     ws.on('message', function(msg) {
