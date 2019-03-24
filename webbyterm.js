@@ -18,11 +18,17 @@ module.exports = class {
         }
 
         console.log("running shell with the shell optoins ", shellopts)
-        return pty.spawn('/bin/bash', shellopts, {
+        let sh = pty.spawn('/bin/bash', shellopts, {
             name: `xterm-color`,
             cwd: this.cwd,
             env: this.env
         })
+
+        sh.on("exit", () => { // restart shell if exited
+            this.term = this._newShell()
+        })
+
+        return sh
     }
     restart(opts) {
         // refresh old terminals unless (refresh=false)
