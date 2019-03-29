@@ -11,8 +11,8 @@ module.exports = class {
     }
     _newShell() {
         let shellopts = []
-        shellopts.push('--noprofile')
-        shellopts.push('--norc')
+        //shellopts.push('--noprofile')
+        //shellopts.push('--norc')
         if (!this.unrestricted) {
             shellopts.push('-r')
         }
